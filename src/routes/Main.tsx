@@ -1,9 +1,18 @@
+import { Stack } from '@mui/material';
 import React from 'react';
 
 
 const App: React.FC<{}> = () => {
+
   return (
-    <span>UHH YEAHHH</span>
+
+    // HEADER
+    // MAIN
+    // FOOTER
+    
+    <Stack>
+      <h1>HELLO THERE</h1>
+    </Stack>
   );
 }
 

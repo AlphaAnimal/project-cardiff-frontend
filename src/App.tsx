@@ -8,6 +8,11 @@ const App: React.FC<{}> = () => {
     <Router>
         <Routes>
           <Route path="/" element={<Main />} /> 
+          <Route path="/profile" element={<Main />} /> 
+          <Route path="/settings" element={<Main />} /> 
+          <Route path="/about" element={<Main />} /> 
+          <Route path="/login" element={<Main />} />
+          <Route path="/register" element={<Main />} />
         </Routes>
     </Router>
   );
