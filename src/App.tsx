@@ -7,12 +7,12 @@ const App: React.FC<{}> = () => {
   return (
     <Router>
         <Routes>
-          <Route path="/" element={<Main />} /> 
-          <Route path="/profile" element={<Main />} /> 
-          <Route path="/settings" element={<Main />} /> 
-          <Route path="/about" element={<Main />} /> 
-          <Route path="/login" element={<Main />} />
-          <Route path="/register" element={<Main />} />
+          <Route path="/" element={<Main view={''} />} /> 
+          <Route path="/profile" element={<Main view={'profile'} />} /> 
+          <Route path="/settings" element={<Main view={'settings'} />} /> 
+          <Route path="/about" element={<Main view={'about'} />} /> 
+          <Route path="/login" element={<Main view={'login'} />} />
+          <Route path="/register" element={<Main view={'register'} />} />
         </Routes>
     </Router>
   );
