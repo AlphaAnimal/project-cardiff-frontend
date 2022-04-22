@@ -13,7 +13,6 @@ const Test: React.FC<{}> = () => {
   const [currentWord, setCurrentWord] = useState<string>(currentWords.substring(0, currentWords.indexOf(' ')))
   const [reverseWord, setReverseWord] = useState<string>('')
   const [currentLetter, setCurrentLetter] = useState<string>(currentDynamicWord.charAt(0))
-  const [errorMade, setErrorMade] = useState<boolean>(false)
   const [score, setScore] = useState<number>(0)
 
   useEffect(() => {
@@ -32,6 +31,9 @@ const Test: React.FC<{}> = () => {
   useEffect(() => {
     console.log('Values entered: ', value)
   },[value])
+  useEffect(() => {
+    console.log('Current score: ', score)
+  },[score])
 
 
   const nextWord = () => {
@@ -46,7 +48,10 @@ const Test: React.FC<{}> = () => {
 
   const handleKeyDown = (e: any) => {
     if (e.keyCode === 32){
-      // Check reverseWord vs currentword
+      // Check value vs currentword
+      if (value  == currentWord){
+        setScore(score+1)
+      }
       nextWord();
       setValue('')
       console.log('value entered: spacebar');
@@ -74,21 +79,20 @@ const Test: React.FC<{}> = () => {
         const letterGone = currentDynamicWord.slice(0, 1);
         setReverseWord(reverseWord+letterGone)
         setCurrentWords(currentWords.slice(1));
-         e.key !== currentLetter ? setErrorMade(true) : setErrorMade(false)
       }
       else if (currentDynamicWord.length === 0){
         console.log('Word finished')
-        if (errorMade === false){
-          setScore(score + 1)
-        }
       }   
     } 
   }
 
   return (
-    <Stack direction="row" spacing="2">
-      <TextField id="standard-basic" variant="standard" style={{maxWidth: '7px'}} onKeyDown={(e) => handleKeyDown(e)} value={value} />
-      <TextField disabled={true} variant="standard" value={currentWords}/>
+    <Stack>
+      <Stack direction="row" spacing="2">
+        <TextField id="standard-basic" variant="standard" style={{maxWidth: '7px'}} onKeyDown={(e) => handleKeyDown(e)} value={value} />
+        <TextField disabled={true} variant="standard" value={currentWords}/>
+      </Stack>
+      <span>{'Current score is: '+score}</span>
     </Stack>
   );
 }
