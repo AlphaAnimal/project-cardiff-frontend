@@ -29,10 +29,13 @@ const Test: React.FC<{}> = () => {
   useEffect(() => {
     console.log('Current words: ', currentWords)
   },[currentWords])
+  useEffect(() => {
+    console.log('Values entered: ', value)
+  },[value])
 
 
   const nextWord = () => {
-    const trimmedWords = currentWords.trim()   
+    const trimmedWords = currentWords.trim();   
     const nextWords = trimmedWords.slice(currentWords.indexOf(' '));
     setCurrentWords(nextWords.trim());
     const trimtrim = nextWords.trim()
@@ -43,6 +46,7 @@ const Test: React.FC<{}> = () => {
 
   const handleKeyDown = (e: any) => {
     if (e.keyCode === 32){
+      // Check reverseWord vs currentword
       nextWord();
       setValue('')
       console.log('value entered: spacebar');
@@ -50,6 +54,7 @@ const Test: React.FC<{}> = () => {
     else if (e.keyCode === 8){
       console.log('value entered: backspace');
       if (reverseWord.length > 0){
+        setValue(value.slice(0, -1))
         const currentChar = reverseWord.length -1;
         const currentWordArray = currentWord.split('');
         const letterToAdd = currentWordArray[currentChar]
@@ -62,7 +67,7 @@ const Test: React.FC<{}> = () => {
       }
     }
     else {
-      setValue(e.value)
+      setValue(value + e.key)
       if (currentDynamicWord.length > 0){
         console.log('value entered: ', e.key);
         setCurrentDynamicWord(currentDynamicWord.slice(1));
