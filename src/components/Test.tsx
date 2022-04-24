@@ -1,8 +1,8 @@
-import { Stack, TextField } from '@mui/material';
+import { Button, Stack, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 
-const Test: React.FC<{}> = () => {
+const Test: React.FC<{time: number}> = (props) => {
 
   const words = ['some', 'random', 'words', 'which', 'the', 'user', 'has', 'to', 'type', 'but', 'they', 'should', 'come', 'from', 'api']
   const wordsString = words.join(' ')
@@ -12,29 +12,23 @@ const Test: React.FC<{}> = () => {
   const [currentDynamicWord, setCurrentDynamicWord] = useState<string>(currentWords.substring(0, currentWords.indexOf(' ')))
   const [currentWord, setCurrentWord] = useState<string>(currentWords.substring(0, currentWords.indexOf(' ')))
   const [reverseWord, setReverseWord] = useState<string>('')
-  const [currentLetter, setCurrentLetter] = useState<string>(currentDynamicWord.charAt(0))
   const [score, setScore] = useState<number>(0)
+  const [timer, setTimer] = useState<number>(0)
+  const [testRunning, setTestRunning] = useState<boolean>(false)
 
   useEffect(() => {
-    setCurrentLetter(currentWords.charAt(0))
-  },[currentWords])
+    timer > 0 ? setTimeout(() => setTimer(timer -1), 1000) : finishTest()
+  },[timer]);
 
-  useEffect(() => {
-    console.log('Current word: ', currentDynamicWord)
-  },[currentDynamicWord])
-  useEffect(() => {
-    console.log('Reverse word: ', reverseWord)
-  },[reverseWord])
-  useEffect(() => {
-    console.log('Current words: ', currentWords)
-  },[currentWords])
-  useEffect(() => {
-    console.log('Values entered: ', value)
-  },[value])
-  useEffect(() => {
-    console.log('Current score: ', score)
-  },[score])
+  const startTest = () => {
+    setTestRunning(true)
+    document.getElementById('typing-box')?.focus()
+    setTimeout(() => setTimer(props.time -1), 1000);
+  }
 
+  const finishTest = () => {
+    setTestRunning(false)
+  }
 
   const nextWord = () => {
     const trimmedWords = currentWords.trim();   
@@ -47,6 +41,7 @@ const Test: React.FC<{}> = () => {
   }
 
   const handleKeyDown = (e: any) => {
+    if (testRunning)
     if (e.keyCode === 32){
       // Check value vs currentword
       if (value  == currentWord){
@@ -89,10 +84,12 @@ const Test: React.FC<{}> = () => {
   return (
     <Stack>
       <Stack direction="row" spacing="2">
-        <TextField id="standard-basic" variant="standard" style={{maxWidth: '7px'}} onKeyDown={(e) => handleKeyDown(e)} value={value} />
+        <TextField id="typing-box" variant="standard" style={{maxWidth: '7px'}} onKeyDown={(e) => handleKeyDown(e)} value={value} />
         <TextField disabled={true} variant="standard" value={currentWords}/>
+        <Button variant="contained" onClick={(e) => startTest()} >Start Test</Button>
       </Stack>
       <span>{'Current score is: '+score}</span>
+      <span>{'Time left: '+timer}</span>
     </Stack>
   );
 }

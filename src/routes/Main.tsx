@@ -15,7 +15,7 @@ const Main: React.FC<{view: string}> = (props) => {
 
     {props.view == '' && 
       <Stack>
-        <Test></Test>
+        <Test time={60}></Test>
       </Stack>
     }
 
