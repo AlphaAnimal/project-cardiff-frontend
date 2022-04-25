@@ -5,7 +5,9 @@ import AppHeader from '../components/AppHeader';
 import Test from '../components/Test';
 
 
-const Main: React.FC<{view: string}> = (props) => {
+const Main: React.FC<{view: string, logged?: boolean}> = (props) => {
+
+  // IF COMING FROM LOGOUT, LOG THE USER OUT HERE
 
   return (
     <>
@@ -15,7 +17,13 @@ const Main: React.FC<{view: string}> = (props) => {
 
     {props.view == '' && 
       <Stack>
-        <Test time={60}></Test>
+        <Test></Test>
+      </Stack>
+    }
+
+    {props.view == 'scores' && 
+      <Stack>
+        <h1>SCORES</h1>
       </Stack>
     }
 

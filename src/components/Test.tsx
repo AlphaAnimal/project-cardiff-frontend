@@ -1,12 +1,12 @@
-import { Button, Stack, TextField } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 
-const Test: React.FC<{time: number}> = (props) => {
+const Test: React.FC<{}> = () => {
 
   const words = ['some', 'random', 'words', 'which', 'the', 'user', 'has', 'to', 'type', 'but', 'they', 'should', 'come', 'from', 'api']
   const wordsString = words.join(' ')
-
+  const [selectedTime, setSelectedTime] = useState<number>(60);
   const [value, setValue] = useState<string>('')
   const [currentWords, setCurrentWords] = useState<string>(wordsString)
   const [currentDynamicWord, setCurrentDynamicWord] = useState<string>(currentWords.substring(0, currentWords.indexOf(' ')))
@@ -16,6 +16,10 @@ const Test: React.FC<{time: number}> = (props) => {
   const [timer, setTimer] = useState<number>(0)
   const [testRunning, setTestRunning] = useState<boolean>(false)
 
+  const handleDropboxChange = (event: any) => {
+    setSelectedTime(event.target.value);
+  };
+
   useEffect(() => {
     timer > 0 ? setTimeout(() => setTimer(timer -1), 1000) : finishTest()
   },[timer]);
@@ -23,7 +27,7 @@ const Test: React.FC<{time: number}> = (props) => {
   const startTest = () => {
     setTestRunning(true)
     document.getElementById('typing-box')?.focus()
-    setTimeout(() => setTimer(props.time -1), 1000);
+    setTimeout(() => setTimer(selectedTime -1), 1000);
   }
 
   const finishTest = () => {
@@ -81,12 +85,28 @@ const Test: React.FC<{time: number}> = (props) => {
     } 
   }
 
+  
+
   return (
     <Stack>
       <Stack direction="row" spacing="2">
         <TextField id="typing-box" variant="standard" style={{maxWidth: '7px'}} onKeyDown={(e) => handleKeyDown(e)} value={value} />
         <TextField disabled={true} variant="standard" value={currentWords}/>
-        <Button variant="contained" onClick={(e) => startTest()} >Start Test</Button>
+        <FormControl>
+          <InputLabel id="demo-simple-select-label">Test Length</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={selectedTime}
+            label="Age"
+            onChange={handleDropboxChange}
+          >
+            <MenuItem value={60}>One Minute</MenuItem>
+            <MenuItem value={120}>Two Minutes</MenuItem>
+            <MenuItem value={180}>Three Minutes</MenuItem>
+          </Select>
+      </FormControl>
+        <Button variant="contained" onClick={(e) => !testRunning ? startTest() : null} >Start Test</Button>
       </Stack>
       <span>{'Current score is: '+score}</span>
       <span>{'Time left: '+timer}</span>
