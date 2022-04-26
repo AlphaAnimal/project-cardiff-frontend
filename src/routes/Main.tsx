@@ -1,17 +1,21 @@
 import { Stack } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import AppFooter from '../components/AppFooter';
 import AppHeader from '../components/AppHeader';
+import Login from '../components/Login';
+import Register from '../components/Register';
 import Test from '../components/Test';
 
 
 const Main: React.FC<{view: string, logged?: boolean}> = (props) => {
 
+  const [user, setUser] = useState<string>('');
+
   // IF COMING FROM LOGOUT, LOG THE USER OUT HERE
 
   return (
     <>
-    <AppHeader></AppHeader>
+    <AppHeader user={user} ></AppHeader>
     
     {/* CONDITIONS BASED ON VIEW */}
 
@@ -27,7 +31,7 @@ const Main: React.FC<{view: string, logged?: boolean}> = (props) => {
       </Stack>
     }
 
-    {props.view == 'profile' && 
+    {props.view == 'profile' && user !== '' && 
       <Stack>
         <h1>PROFILE</h1>
       </Stack>
@@ -45,15 +49,15 @@ const Main: React.FC<{view: string, logged?: boolean}> = (props) => {
       </Stack>
     }
 
-    {props.view == 'login' && 
+    {props.view == 'login' && user == '' && 
       <Stack>
-        <h1>LOGIN</h1>
+        <Login></Login>
       </Stack>
     }
 
-    {props.view == 'register' && 
+    {props.view == 'register' && user == '' && 
       <Stack>
-        <h1>REGISTER</h1>
+        <Register></Register>
       </Stack>
     }
 
