@@ -1,68 +1,55 @@
 import { Stack } from '@mui/material';
-import React, { useState } from 'react';
-import AppFooter from '../components/AppFooter';
+import React, { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import Login from '../components/Login';
+import Profile from '../components/Profile';
 import Register from '../components/Register';
+import Scores from '../components/Scores';
 import Test from '../components/Test';
 
 
-const Main: React.FC<{view: string, logged?: boolean}> = (props) => {
 
-  const [user, setUser] = useState<string>('');
 
-  // IF COMING FROM LOGOUT, LOG THE USER OUT HERE
+const Main: React.FC<{view: string}> = (props) => {
+
+  const user = localStorage.getItem('user') || '';
 
   return (
     <>
-    <AppHeader user={user} ></AppHeader>
+    <AppHeader></AppHeader>
+    <Stack alignItems={'center'} sx={{ mt: 30 }} >
     
     {/* CONDITIONS BASED ON VIEW */}
 
-    {props.view == '' && 
-      <Stack>
+    {props.view == '' &&
         <Test></Test>
-      </Stack>
     }
 
     {props.view == 'scores' && 
-      <Stack>
-        <h1>SCORES</h1>
-      </Stack>
+        <Scores></Scores>
     }
 
     {props.view == 'profile' && user !== '' && 
-      <Stack>
-        <h1>PROFILE</h1>
-      </Stack>
+        <Profile></Profile>
     }
 
     {props.view == 'settings' && 
-      <Stack>
         <h1>SETTINGS</h1>
-      </Stack>
     }
     
     {props.view == 'about' && 
-      <Stack>
         <h1>ABOUT</h1>
-      </Stack>
     }
 
-    {props.view == 'login' && user == '' && 
-      <Stack>
+    {props.view == 'login' && user == '' &&
         <Login></Login>
-      </Stack>
     }
 
     {props.view == 'register' && user == '' && 
-      <Stack>
         <Register></Register>
-      </Stack>
     }
 
-    <AppFooter></AppFooter>
-
+    </Stack>
     </>
   );
 }

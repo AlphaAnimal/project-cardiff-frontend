@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { FaUser } from 'react-icons/fa';
+import { register } from '../services/userServices';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
+import { Button, Stack, TextField, Typography } from '@mui/material';
 
 const Register = () => {
 
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -25,21 +25,7 @@ const Register = () => {
     }))
   }
 
-  const API_URL = 'http://localhost:5000/api/users/';
-
-  // Maybe put this in a try catch
-  const register = async (userData : any) => {
-    const response = await axios.post(API_URL, userData);
-    if (response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data))
-        navigate('/login')
-    }
-
-    return response.data
-  }
-
   const onSubmit = (e: any) => {
-      console.log('submittingggg    ')
     if (password !== password2) {
         console.log('Passwords do not match!')
     } else {
@@ -49,77 +35,59 @@ const Register = () => {
         password,
         }
         try{
-            register(userData)
+          const res = register(userData);
+          res.then(() => navigate('/home'))
         }
         catch (error: any) {
             console.log(error)
         }
-        
     }
   }
 
   return (
     <>
-      <section className='heading'>
-        <h1>
-          <FaUser /> Register
-        </h1>
-        <p>Please create an account</p>
-      </section>
+    
+        
+    <Stack textAlign='center' mb={2} >
+      <Typography fontSize={'28px'} >Register</Typography>
+    </Stack>
 
-      <section className='form'>
+    <Stack direction="column" spacing={2}>
+    
+      <TextField
+        type='text'
+        name='name'
+        value={name}
+        placeholder='Enter your name'
+        onChange={onChange}
+      />
+      <TextField
+        type='email'
+        name='email'
+        value={email}
+        placeholder='Enter your email'
+        onChange={onChange}
+      />
+      <TextField
+        type='password'
+        name='password'
+        value={password}
+        placeholder='Enter password'
+        onChange={onChange}
+      />
+      <TextField
+        type='password'
+        name='password2'
+        value={password2}
+        placeholder='Confirm password'
+        onChange={onChange}
+      />
+      <Button onClick={(e) => onSubmit(e)} variant='contained'>
+        Submit
+      </Button>
+
+    </Stack>
         
-          <div className='form-group'>
-            <input
-              type='text'
-              className='form-control'
-              id='name'
-              name='name'
-              value={name}
-              placeholder='Enter your name'
-              onChange={onChange}
-            />
-          </div>
-          <div className='form-group'>
-            <input
-              type='email'
-              className='form-control'
-              id='email'
-              name='email'
-              value={email}
-              placeholder='Enter your email'
-              onChange={onChange}
-            />
-          </div>
-          <div className='form-group'>
-            <input
-              type='password'
-              className='form-control'
-              id='password'
-              name='password'
-              value={password}
-              placeholder='Enter password'
-              onChange={onChange}
-            />
-          </div>
-          <div className='form-group'>
-            <input
-              type='password'
-              className='form-control'
-              id='password2'
-              name='password2'
-              value={password2}
-              placeholder='Confirm password'
-              onChange={onChange}
-            />
-          </div>
-          <div className='form-group'>
-            <button onClick={(e) => onSubmit(e)} className='btn btn-block'>
-              Submit
-            </button>
-          </div>
-        
-      </section>
     </>
   )
 }

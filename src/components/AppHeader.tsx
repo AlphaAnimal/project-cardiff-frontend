@@ -4,16 +4,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaKeyboard } from 'react-icons/fa';
 
-const AppHeader: React.FC<{user: string}> = (props) => {
+const AppHeader: React.FC<{}> = () => {
 
   const navigate = useNavigate();
 
-  const routes = props.user !== '' ? ['Home', 'Scores', 'About', 'Profile'] : ['Home', 'Scores', 'About', 'Login', 'Register'];
+  const user = localStorage.getItem('user') || '';
+
+  const routes = user !== '' ? ['Home', 'Scores', 'About', 'Profile'] : ['Home', 'Scores', 'About', 'Login', 'Register'];
 
   return (
-    <AppBar position="static" style={{ width: '100%'}} >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
+    <AppBar position="static" >
+        <Toolbar>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {routes.map((route) => (
               <Button
@@ -26,7 +27,6 @@ const AppHeader: React.FC<{user: string}> = (props) => {
             ))}
           </Box>
         </Toolbar>
-      </Container>
     </AppBar>
   );
 };

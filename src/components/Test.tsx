@@ -1,11 +1,48 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { Box, Button, MenuItem, Modal, Select, Stack, TextField, ThemeProvider, Typography } from '@mui/material';
+import { style } from '@mui/system';
 import React, { useEffect, useState } from 'react';
+import { getWords, updateWord } from '../services/wordsServices';
+import { createScore } from '../services/scoreServices';
+
 
 
 const Test: React.FC<{}> = () => {
 
-  const words = ['some', 'random', 'words', 'which', 'the', 'user', 'has', 'to', 'type', 'but', 'they', 'should', 'come', 'from', 'api']
-  const wordsString = words.join(' ')
+  const user = JSON.parse(localStorage.getItem('user') || '');
+  const userId = user._id;
+  const userToken = user.token;
+
+  //Fisher-Yates algorithm
+  const shuffleArray = (array: string[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  }
+
+  useEffect(() => {
+    try {
+      const res = getWords();
+      res.then((result) => {
+        setResultObject(result)
+        const words = result.map((word: any) => word.text);
+        const shuffledWords = shuffleArray(words)
+        setWords(shuffledWords)
+        setWordsString(shuffledWords.join(' '))
+      })
+    }
+    catch (error){
+      console.log(error)
+    }
+  },[]);
+
+
+  const [resultObject, setResultObject] = useState<any>();
+  const [words, setWords] = useState<string[]>(['']);
+  const [wordsString, setWordsString] = useState<string>(words.join(' '))
   const [selectedTime, setSelectedTime] = useState<number>(60);
   const [value, setValue] = useState<string>('')
   const [currentWords, setCurrentWords] = useState<string>(wordsString)
@@ -13,18 +50,37 @@ const Test: React.FC<{}> = () => {
   const [currentWord, setCurrentWord] = useState<string>(currentWords.substring(0, currentWords.indexOf(' ')))
   const [reverseWord, setReverseWord] = useState<string>('')
   const [score, setScore] = useState<number>(0)
-  const [timer, setTimer] = useState<number>(0)
+  const [timer, setTimer] = useState<number>(60)
   const [testRunning, setTestRunning] = useState<boolean>(false)
+  const [keyboardType, setKeyboardType] = useState<string>('qwerty')
+  const [theme, setTheme] = useState<number>(0);
 
-  const handleDropboxChange = (event: any) => {
+
+  const handleTimeChange = (event: any) => {
     setSelectedTime(event.target.value);
   };
 
+  const handleTypeChange = (event: any) => {
+    setKeyboardType(event.target.value);
+  };
+
+  const handleThemeChange = (event: any) => {
+    setTheme(event.target.value);
+  };
+
   useEffect(() => {
+    if(testRunning)
     timer > 0 ? setTimeout(() => setTimer(timer -1), 1000) : finishTest()
   },[timer]);
 
+  useEffect(() => {
+    setCurrentWords(wordsString)
+    setCurrentDynamicWord(wordsString.substring(0, wordsString.indexOf(' ')))
+    setCurrentWord(wordsString.substring(0, wordsString.indexOf(' ')))
+  },[wordsString]);
+
   const startTest = () => {
+    setScore(0)
     setTestRunning(true)
     document.getElementById('typing-box')?.focus()
     setTimeout(() => setTimer(selectedTime -1), 1000);
@@ -32,6 +88,22 @@ const Test: React.FC<{}> = () => {
 
   const finishTest = () => {
     setTestRunning(false)
+    //Send data to backend from here (user, type, score)
+    const themeData = theme == 0 ? false : true
+    try {
+      const data = {user: userId, type: keyboardType, score: score, theme: themeData}
+      const res = createScore(data, userToken);
+      res.then((result) => {
+        const words = result.map((word: any) => word.text);
+        const shuffledWords = shuffleArray(words)
+        
+        setWords(shuffledWords)
+        setWordsString(shuffledWords.join(' '))
+      })
+    }
+    catch (error){
+      console.log(error)
+    }
   }
 
   const nextWord = () => {
@@ -47,69 +119,95 @@ const Test: React.FC<{}> = () => {
   const handleKeyDown = (e: any) => {
     if (testRunning)
     if (e.keyCode === 32){
-      // Check value vs currentword
       if (value  == currentWord){
         setScore(score+1)
       }
+      else{
+        const currentWordData = resultObject.filter((word: any) => word.text == currentWord);
+        const wordData = {text: currentWord, mistakes: currentWordData[0].mistakes+1};
+        const wordId = currentWordData[0]._id;
+        updateWord(wordId, wordData);
+      }
       nextWord();
       setValue('')
-      console.log('value entered: spacebar');
     }
     else if (e.keyCode === 8){
-      console.log('value entered: backspace');
       if (reverseWord.length > 0){
-        setValue(value.slice(0, -1))
+        
         const currentChar = reverseWord.length -1;
         const currentWordArray = currentWord.split('');
         const letterToAdd = currentWordArray[currentChar]
-        setCurrentWords(letterToAdd + currentWords)
-        setCurrentDynamicWord(letterToAdd + currentDynamicWord)
-        setReverseWord(reverseWord.slice(0, -1))
+        if (value.length <= currentWord.length){
+          setCurrentWords(letterToAdd + currentWords)
+          setCurrentDynamicWord(letterToAdd + currentDynamicWord)
+          setReverseWord(reverseWord.slice(0, -1))
+          setValue(value.slice(0, -1))
+        }
+        setValue(value.slice(0, -1))
       }
       else if (reverseWord.length == 0){
-        console.log('No chars to delete')
+        setValue('')
       }
     }
-    else {
+    else if (e.keyCode !== 16) {
       setValue(value + e.key)
       if (currentDynamicWord.length > 0){
-        console.log('value entered: ', e.key);
         setCurrentDynamicWord(currentDynamicWord.slice(1));
         const letterGone = currentDynamicWord.slice(0, 1);
         setReverseWord(reverseWord+letterGone)
         setCurrentWords(currentWords.slice(1));
-      }
-      else if (currentDynamicWord.length === 0){
-        console.log('Word finished')
-      }   
+      } 
     } 
   }
 
-  
-
   return (
-    <Stack>
-      <Stack direction="row" spacing="2">
-        <TextField id="typing-box" variant="standard" style={{maxWidth: '7px'}} onKeyDown={(e) => handleKeyDown(e)} value={value} />
-        <TextField disabled={true} variant="standard" value={currentWords}/>
-        <FormControl>
-          <InputLabel id="demo-simple-select-label">Test Length</InputLabel>
+    <Stack direction="column" spacing={10}>
+      <Stack direction="row" spacing={4}>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
             value={selectedTime}
-            label="Age"
-            onChange={handleDropboxChange}
+            onChange={handleTimeChange}
+            style={{width: '155px'}}
           >
             <MenuItem value={60}>One Minute</MenuItem>
             <MenuItem value={120}>Two Minutes</MenuItem>
             <MenuItem value={180}>Three Minutes</MenuItem>
           </Select>
-      </FormControl>
+          <Select
+            value={keyboardType}
+            onChange={handleTypeChange}
+            style={{width: '155px'}}
+          >
+            <MenuItem value={'qwerty'}>QWERTY</MenuItem>
+            <MenuItem value={'dvorak'}>DVORAK</MenuItem>
+            <MenuItem value={'colemark'}>COLEMARK</MenuItem>
+          </Select>
+          <Select
+            value={theme}
+            onChange={handleThemeChange}
+            style={{width: '155px'}}
+          >
+            <MenuItem value={0}>Light Theme</MenuItem>
+            <MenuItem value={1}>Dark Theme</MenuItem>
+          </Select>
         <Button variant="contained" onClick={(e) => !testRunning ? startTest() : null} >Start Test</Button>
       </Stack>
-      <span>{'Current score is: '+score}</span>
-      <span>{'Time left: '+timer}</span>
+      <Stack direction="row" style={{color: 'text.primary', backgroundColor: 'primary'}}>
+        <TextField id="typing-box" variant="standard" dir="rtl" style={{maxWidth: '200px'}} InputProps={{style: {fontSize: 40}}} onKeyDown={(e) => handleKeyDown(e)} value={value} />
+        <TextField disabled={true} variant="standard" InputProps={{style: {fontSize: 40}}}  value={currentWords}/>
+      </Stack>
+     
+      <Stack direction="row" spacing={10}>
+       <Typography>{'Current score is: '+score}</Typography>
+       {
+         testRunning ?
+         <Typography>{'Time left: '+timer+' seconds'}</Typography>
+         : 
+         <Typography>{'Time left: '+selectedTime+' seconds'}</Typography>
+       }
+       </Stack>
+       
+      
+     
     </Stack>
   );
 }
