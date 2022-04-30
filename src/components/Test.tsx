@@ -6,7 +6,14 @@ import { createScore } from '../services/scoreServices';
 
 
 
-const Test: React.FC<{}> = () => {
+const Test: React.FC<{theme: number, setTheme: any}> = (props) => {
+
+  const {theme, setTheme} = props
+
+  useEffect(() => {
+    const themeToSave = theme == 0 ? 'light' : 'dark'
+    localStorage.setItem('theme', themeToSave)
+  },[theme]);
 
   const user = JSON.parse(localStorage.getItem('user') || '');
   const userId = user._id;
@@ -53,8 +60,6 @@ const Test: React.FC<{}> = () => {
   const [timer, setTimer] = useState<number>(60)
   const [testRunning, setTestRunning] = useState<boolean>(false)
   const [keyboardType, setKeyboardType] = useState<string>('qwerty')
-  const [theme, setTheme] = useState<number>(0);
-
 
   const handleTimeChange = (event: any) => {
     setSelectedTime(event.target.value);

@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { createTheme, CssBaseline, Stack, ThemeProvider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
 import Login from '../components/Login';
@@ -14,42 +14,61 @@ const Main: React.FC<{view: string}> = (props) => {
 
   const user = localStorage.getItem('user') || '';
 
+  const mode: number = localStorage.getItem('theme') == 'dark' ? 1 : 0;
+
+  const [theme, setTheme] = useState<number>(mode)
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+    },
+  });
+
+  const lightTheme = createTheme({
+    palette: {
+      mode: 'light',
+    },
+  });
+
   return (
     <>
-    <AppHeader></AppHeader>
-    <Stack alignItems={'center'} sx={{ mt: 30 }} >
-    
-    {/* CONDITIONS BASED ON VIEW */}
+    <ThemeProvider theme={theme == 1 ? darkTheme : lightTheme}>
 
-    {props.view == '' &&
-        <Test></Test>
-    }
+      <CssBaseline />
+      <AppHeader/>
 
-    {props.view == 'scores' && 
-        <Scores></Scores>
-    }
+      <Stack alignItems={'center'} sx={{ mt: 30 }} >
+      
+        {props.view == '' &&
+            <Test theme={theme} setTheme={setTheme} ></Test>
+        }
 
-    {props.view == 'profile' && user !== '' && 
-        <Profile></Profile>
-    }
+        {props.view == 'scores' && 
+            <Scores></Scores>
+        }
 
-    {props.view == 'settings' && 
-        <h1>SETTINGS</h1>
-    }
-    
-    {props.view == 'about' && 
-        <h1>ABOUT</h1>
-    }
+        {props.view == 'profile' && user !== '' && 
+            <Profile></Profile>
+        }
 
-    {props.view == 'login' && user == '' &&
-        <Login></Login>
-    }
+        {props.view == 'settings' && 
+            <h1>SETTINGS</h1>
+        }
+        
+        {props.view == 'about' && 
+            <h1>ABOUT</h1>
+        }
 
-    {props.view == 'register' && user == '' && 
-        <Register></Register>
-    }
+        {props.view == 'login' && user == '' &&
+            <Login></Login>
+        }
 
-    </Stack>
+        {props.view == 'register' && user == '' && 
+            <Register></Register>
+        }
+
+      </Stack>
+    </ThemeProvider>
     </>
   );
 }
