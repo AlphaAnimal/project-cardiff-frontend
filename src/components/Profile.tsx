@@ -1,13 +1,33 @@
 import { Stack, Button, Typography } from '@mui/material';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getScores } from '../services/scoreServices';
 import { logout } from '../services/userServices';
 
 
-const Profile = () => {
+const Profile: React.FC<{}> = () => {
 
     // Preferred keyboard type
     // Preferred theme
     // Personal scores
+
+  const [scores, setScores] = useState()
+
+  useEffect(() => {
+    try {
+      const res = getScores();
+      res.then((result) => {
+        setScores(result)
+      })
+    }
+    catch (error){
+      console.log(error)
+    }
+  },[]);
+
+  useEffect(() => {
+    console.log('scores: ', scores)
+  },[scores]);
 
   const user = JSON.parse(localStorage.getItem('user') || '');
 

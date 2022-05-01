@@ -35,37 +35,50 @@ const Main: React.FC<{view: string}> = (props) => {
       <CssBaseline />
       <AppHeader/>
 
-      <Stack alignItems={'center'} sx={{ mt: 20 }} >
+      
       
         {props.view == '' &&
+        <Stack alignItems={'center'} sx={{ mt: 20 }} >
             <Test theme={theme} setTheme={setTheme} ></Test>
+            </Stack>
         }
 
         {props.view == 'scores' && 
+        <Stack alignItems={'center'} sx={{ mt: 5 }} >
             <Scores></Scores>
+            </Stack>
         }
 
         {props.view == 'profile' && user !== '' && 
+        <Stack alignItems={'center'} sx={{ mt: 20 }} >
             <Profile></Profile>
+            </Stack>
         }
 
         {props.view == 'settings' && 
+        <Stack alignItems={'center'} sx={{ mt: 20 }} >
             <h1>SETTINGS</h1>
+            </Stack>
         }
         
         {props.view == 'keyboards' && 
+        <Stack alignItems={'center'} sx={{ mt: 20 }} >
             <h1>Keyboards</h1>
+            </Stack>
         }
 
         {props.view == 'login' && user == '' &&
+        <Stack alignItems={'center'} sx={{ mt: 20 }} >
             <Login></Login>
+            </Stack>
         }
 
         {props.view == 'register' && user == '' && 
+        <Stack alignItems={'center'} sx={{ mt: 20 }} >
             <Register></Register>
+            </Stack>
         }
 
-      </Stack>
     </ThemeProvider>
     </>
   );

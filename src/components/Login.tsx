@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../services/userServices';
 
 
-const Login = () => {
+const Login: React.FC<{}> = () => {
 
   const navigate = useNavigate();
 

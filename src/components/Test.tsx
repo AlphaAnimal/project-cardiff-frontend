@@ -4,6 +4,16 @@ import React, { useEffect, useState } from 'react';
 import { getWords, updateWord } from '../services/wordsServices';
 import { createScore } from '../services/scoreServices';
 
+ //Fisher-Yates algorithm
+ export const shuffleArray = (array: string[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
 
 
 const Test: React.FC<{theme: number, setTheme: any}> = (props) => {
@@ -20,16 +30,7 @@ const Test: React.FC<{theme: number, setTheme: any}> = (props) => {
   const userId = user._id || '';
 
 
-  //Fisher-Yates algorithm
-  const shuffleArray = (array: string[]) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
-    return array;
-  }
+ 
 
   useEffect(() => {
     try {
@@ -98,6 +99,7 @@ const Test: React.FC<{theme: number, setTheme: any}> = (props) => {
     const themeData = theme == 0 ? false : true
     try {
       const data = {user: userId, type: keyboardType, score: score, theme: themeData}
+      console.log('data: ', data)
       const res = createScore(data);
       res.then((result) => {
         const words = result.map((word: any) => word.text);
