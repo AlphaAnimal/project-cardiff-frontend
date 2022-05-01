@@ -1,3 +1,4 @@
+import { Stack, Typography, Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import { FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -39,43 +40,31 @@ const Login = () => {
 
   return (
     <>
-      <section className='heading'>
-        <h1>
-          <FaUser /> Login
-        </h1>
-        <p>Please enter your details</p>
-      </section>
+      <Stack className='heading' textAlign='center' mb={2}>
+        <Typography fontSize={'28px'} >Login</Typography>
+      </Stack>
 
-      <section className='form'>
-          <div className='form-group'>
-            <input
+      <Stack direction="column" spacing={2}>
+            <TextField
               type='email'
-              className='form-control'
-              id='email'
               name='email'
               value={email}
               placeholder='Enter your email'
               onChange={onChange}
             />
-          </div>
-          <div className='form-group'>
-            <input
+            <TextField
               type='password'
-              className='form-control'
-              id='password'
               name='password'
               value={password}
               placeholder='Enter password'
               onChange={onChange}
             />
-          </div>
-          <div className='form-group'>
-            <button onClick={(e) => onSubmit(e)} className='btn btn-block'>
+          
+            <Button onClick={(e) => onSubmit(e)} variant='contained'>
               Submit
-            </button>
-          </div>
+            </Button>
         
-      </section>
+      </Stack>
     </>
   )
 }

@@ -1,15 +1,17 @@
-import { Stack, Button } from '@mui/material';
+import { Stack, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/userServices';
 
 
 const Profile = () => {
 
-    // Logged in as +name
-    // Account creation date
-    // Number of games (per type)
+    // Preferred keyboard type
+    // Preferred theme
+    // Personal scores
 
-  const user = localStorage.getItem('user');
+  const user = JSON.parse(localStorage.getItem('user') || '');
+
+  console.log('user: ', user)
 
   const navigate = useNavigate();
 
@@ -19,8 +21,12 @@ const Profile = () => {
   }
 
   return (
-    <Stack>
-      <Button onClick={(e)=>onLogout()} variant="contained" >Logout</Button>
+    <Stack direction={'column'} spacing={2}>
+      <Typography variant={'h6'}>Logged in as: {user.name}</Typography>
+      <Typography variant={'h6'}>Email: {user.email}</Typography>
+      <Stack>
+      <Button style={{width: '120px'}} onClick={(e)=>onLogout()} variant="contained" >Logout</Button>
+      </Stack>
     </Stack>
   )
 }

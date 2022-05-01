@@ -15,9 +15,10 @@ const Test: React.FC<{theme: number, setTheme: any}> = (props) => {
     localStorage.setItem('theme', themeToSave)
   },[theme]);
 
-  const user = JSON.parse(localStorage.getItem('user') || '');
-  const userId = user._id;
-  const userToken = user.token;
+  const loggedUser = localStorage.getItem('user');
+  const user = loggedUser ? JSON.parse(loggedUser) : '';
+  const userId = user._id || '';
+
 
   //Fisher-Yates algorithm
   const shuffleArray = (array: string[]) => {
@@ -97,7 +98,7 @@ const Test: React.FC<{theme: number, setTheme: any}> = (props) => {
     const themeData = theme == 0 ? false : true
     try {
       const data = {user: userId, type: keyboardType, score: score, theme: themeData}
-      const res = createScore(data, userToken);
+      const res = createScore(data);
       res.then((result) => {
         const words = result.map((word: any) => word.text);
         const shuffledWords = shuffleArray(words)

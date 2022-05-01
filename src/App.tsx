@@ -13,7 +13,7 @@ const App: React.FC<{}> = () => {
           <Route path="/scores" element={<Main view={'scores'} />} /> 
           <Route path="/profile" element={<Main view={'profile'} />} /> 
           <Route path="/settings" element={<Main view={'settings'} />} /> 
-          <Route path="/about" element={<Main view={'about'} />} /> 
+          <Route path="/keyboards" element={<Main view={'keyboards'} />} /> 
           <Route path="/login" element={<Main view={'login'} />} />
           <Route path="/register" element={<Main view={'register'} />} />
           <Route path="/logout" element={<Main view={'login'}/>} />

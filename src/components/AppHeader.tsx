@@ -10,7 +10,7 @@ const AppHeader: React.FC<{}> = () => {
 
   const user = localStorage.getItem('user') || '';
 
-  const routes = user !== '' ? ['Home', 'Scores', 'About', 'Profile'] : ['Home', 'Scores', 'About', 'Login', 'Register'];
+  const routes = user !== '' ? ['Home', 'Scores', 'Keyboards', 'Profile'] : ['Home', 'Scores', 'Login', 'Register'];
 
   return (
     <AppBar position="static" >

@@ -4,10 +4,8 @@ import AppHeader from '../components/AppHeader';
 import Login from '../components/Login';
 import Profile from '../components/Profile';
 import Register from '../components/Register';
-import Scores from '../components/Scores';
+import Scores from '../components/Scores/Scores';
 import Test from '../components/Test';
-
-
 
 
 const Main: React.FC<{view: string}> = (props) => {
@@ -37,7 +35,7 @@ const Main: React.FC<{view: string}> = (props) => {
       <CssBaseline />
       <AppHeader/>
 
-      <Stack alignItems={'center'} sx={{ mt: 30 }} >
+      <Stack alignItems={'center'} sx={{ mt: 20 }} >
       
         {props.view == '' &&
             <Test theme={theme} setTheme={setTheme} ></Test>
@@ -55,8 +53,8 @@ const Main: React.FC<{view: string}> = (props) => {
             <h1>SETTINGS</h1>
         }
         
-        {props.view == 'about' && 
-            <h1>ABOUT</h1>
+        {props.view == 'keyboards' && 
+            <h1>Keyboards</h1>
         }
 
         {props.view == 'login' && user == '' &&
