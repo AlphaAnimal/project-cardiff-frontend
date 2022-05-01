@@ -1,6 +1,7 @@
 import { createTheme, CssBaseline, Stack, ThemeProvider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import AppHeader from '../components/AppHeader';
+import Keyboards from '../components/Keyboards';
 import Login from '../components/Login';
 import Profile from '../components/Profile';
 import Register from '../components/Register';
@@ -50,20 +51,14 @@ const Main: React.FC<{view: string}> = (props) => {
         }
 
         {props.view == 'profile' && user !== '' && 
-        <Stack alignItems={'center'} sx={{ mt: 20 }} >
+        <Stack alignItems={'center'} sx={{ mt: 5 }} >
             <Profile></Profile>
-            </Stack>
-        }
-
-        {props.view == 'settings' && 
-        <Stack alignItems={'center'} sx={{ mt: 20 }} >
-            <h1>SETTINGS</h1>
             </Stack>
         }
         
         {props.view == 'keyboards' && 
-        <Stack alignItems={'center'} sx={{ mt: 20 }} >
-            <h1>Keyboards</h1>
+        <Stack alignItems={'center'} sx={{ mt: 5 }} >
+            <Keyboards></Keyboards>
             </Stack>
         }
 

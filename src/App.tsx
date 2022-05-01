@@ -12,7 +12,6 @@ const App: React.FC<{}> = () => {
           <Route path="/home" element={<Main view={''} />} /> 
           <Route path="/scores" element={<Main view={'scores'} />} /> 
           <Route path="/profile" element={<Main view={'profile'} />} /> 
-          <Route path="/settings" element={<Main view={'settings'} />} /> 
           <Route path="/keyboards" element={<Main view={'keyboards'} />} /> 
           <Route path="/login" element={<Main view={'login'} />} />
           <Route path="/register" element={<Main view={'register'} />} />
