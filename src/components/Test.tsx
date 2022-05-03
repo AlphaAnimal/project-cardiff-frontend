@@ -95,18 +95,13 @@ const Test: React.FC<{theme: number, setTheme: any}> = (props) => {
 
   const finishTest = () => {
     setTestRunning(false)
-    //Send data to backend from here (user, type, score)
     const themeData = theme == 0 ? false : true
     try {
       const data = {user: userId, type: keyboardType, score: score, theme: themeData}
       console.log('data: ', data)
       const res = createScore(data);
       res.then((result) => {
-        const words = result.map((word: any) => word.text);
-        const shuffledWords = shuffleArray(words)
-        
-        setWords(shuffledWords)
-        setWordsString(shuffledWords.join(' '))
+        console.log('result: ', result)
       })
     }
     catch (error){
