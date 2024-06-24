@@ -1,82 +1,76 @@
-import { createTheme, CssBaseline, Stack, ThemeProvider } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import AppHeader from '../components/AppHeader';
-import Keyboards from '../components/Keyboards';
-import Login from '../components/Login';
-import Profile from '../components/Profile';
-import Register from '../components/Register';
-import Scores from '../components/Scores/Scores';
-import Test from '../components/Test';
+import { createTheme, CssBaseline, Stack, ThemeProvider } from "@mui/material";
+import React, { useState } from "react";
+import AppHeader from "../components/AppHeader";
+import Keyboards from "../components/Keyboards";
+import Login from "../components/Login";
+import Profile from "../components/Profile";
+import Register from "../components/Register";
+import Scores from "../components/Scores/Scores";
+import Test from "../components/Test";
 
+const Main: React.FC<{ view: string }> = (props) => {
+  const user = localStorage.getItem("user") || "";
 
-const Main: React.FC<{view: string}> = (props) => {
+  const mode: number = localStorage.getItem("theme") == "dark" ? 1 : 0;
 
-  const user = localStorage.getItem('user') || '';
-
-  const mode: number = localStorage.getItem('theme') == 'dark' ? 1 : 0;
-
-  const [theme, setTheme] = useState<number>(mode)
+  const [theme, setTheme] = useState<number>(mode);
 
   const darkTheme = createTheme({
     palette: {
-      mode: 'dark',
+      mode: "dark",
     },
   });
 
   const lightTheme = createTheme({
     palette: {
-      mode: 'light',
+      mode: "light",
     },
   });
 
   return (
     <>
-    <ThemeProvider theme={theme == 1 ? darkTheme : lightTheme}>
+      <ThemeProvider theme={theme == 1 ? darkTheme : lightTheme}>
+        <CssBaseline />
+        <AppHeader />
 
-      <CssBaseline />
-      <AppHeader/>
+        {props.view == "" && (
+          <Stack alignItems={"center"} sx={{ mt: 20 }}>
+            <Test theme={theme} setTheme={setTheme}></Test>
+          </Stack>
+        )}
 
-      
-      
-        {props.view == '' &&
-        <Stack alignItems={'center'} sx={{ mt: 20 }} >
-            <Test theme={theme} setTheme={setTheme} ></Test>
-            </Stack>
-        }
-
-        {props.view == 'scores' && 
-        <Stack alignItems={'center'} sx={{ mt: 5 }} >
+        {props.view == "scores" && (
+          <Stack alignItems={"center"} sx={{ mt: 5 }}>
             <Scores></Scores>
-            </Stack>
-        }
+          </Stack>
+        )}
 
-        {props.view == 'profile' && user !== '' && 
-        <Stack alignItems={'center'} sx={{ mt: 5 }} >
+        {props.view == "profile" && user !== "" && (
+          <Stack alignItems={"center"} sx={{ mt: 5 }}>
             <Profile></Profile>
-            </Stack>
-        }
-        
-        {props.view == 'keyboards' && 
-        <Stack alignItems={'center'} sx={{ mt: 5 }} >
+          </Stack>
+        )}
+
+        {props.view == "keyboards" && (
+          <Stack alignItems={"center"} sx={{ mt: 5 }}>
             <Keyboards></Keyboards>
-            </Stack>
-        }
+          </Stack>
+        )}
 
-        {props.view == 'login' && user == '' &&
-        <Stack alignItems={'center'} sx={{ mt: 20 }} >
+        {props.view == "login" && user == "" && (
+          <Stack alignItems={"center"} sx={{ mt: 20 }}>
             <Login></Login>
-            </Stack>
-        }
+          </Stack>
+        )}
 
-        {props.view == 'register' && user == '' && 
-        <Stack alignItems={'center'} sx={{ mt: 20 }} >
+        {props.view == "register" && user == "" && (
+          <Stack alignItems={"center"} sx={{ mt: 20 }}>
             <Register></Register>
-            </Stack>
-        }
-
-    </ThemeProvider>
+          </Stack>
+        )}
+      </ThemeProvider>
     </>
   );
-}
+};
 
 export default Main;
