@@ -6,7 +6,7 @@ import Login from "../components/Login";
 import Profile from "../components/Profile";
 import Register from "../components/Register";
 import Scores from "../components/Scores/Scores";
-import Test from "../components/Test";
+import Test from "../components/Test/Test";
 
 const Main: React.FC<{ view: string }> = (props) => {
   const user = localStorage.getItem("user") || "";
@@ -34,7 +34,7 @@ const Main: React.FC<{ view: string }> = (props) => {
         <AppHeader />
 
         {props.view == "" && (
-          <Stack alignItems={"center"} sx={{ mt: 20 }}>
+          <Stack alignItems={"center"} sx={{ mt: 10 }}>
             <Test theme={theme} setTheme={setTheme}></Test>
           </Stack>
         )}

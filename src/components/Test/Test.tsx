@@ -7,27 +7,13 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { createScore } from "../services/scoreServices";
-import { getWords, updateWord } from "../services/wordsServices";
-
-//Fisher-Yates algorithm
-export const shuffleArray = (array: string[]) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-  }
-  return array;
-};
+import { createScore } from "../../services/scoreServices";
+import { getWords, updateWord } from "../../services/wordsServices";
+import Timer from "./components/Timer";
+import { isAlphabetCharacter, shuffleArray } from "./utils";
 
 const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
   const { theme, setTheme } = props;
-
-  useEffect(() => {
-    const themeToSave = theme == 0 ? "light" : "dark";
-    localStorage.setItem("theme", themeToSave);
-  }, [theme]);
 
   const loggedUser = localStorage.getItem("user");
   const user = loggedUser ? JSON.parse(loggedUser) : "";
@@ -62,7 +48,7 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
   );
   const [reverseWord, setReverseWord] = useState<string>("");
   const [score, setScore] = useState<number>(0);
-  const [timer, setTimer] = useState<number>(60);
+  const [timer, setTimer] = useState<number>(0);
   const [testRunning, setTestRunning] = useState<boolean>(false);
   const [keyboardType, setKeyboardType] = useState<string>("qwerty");
 
@@ -75,7 +61,10 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
   };
 
   const handleThemeChange = (event: any) => {
-    setTheme(event.target.value);
+    const themeNumber = event.target.value;
+    setTheme(themeNumber);
+    const themeName = themeNumber === 0 ? "light" : "dark";
+    localStorage.setItem("theme", themeName);
   };
 
   useEffect(() => {
@@ -89,15 +78,21 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
     setCurrentWord(wordsString.substring(0, wordsString.indexOf(" ")));
   }, [wordsString]);
 
-  const startTest = () => {
+  const stopTest = () => {
+    setTestRunning(false);
+    document.getElementById("typing-box")?.blur();
+  };
+
+  const resetTest = () => {
+    setTimer(0);
     setScore(0);
-    setTestRunning(true);
-    document.getElementById("typing-box")?.focus();
-    setTimeout(() => setTimer(selectedTime - 1), 1000);
+    stopTest();
   };
 
   const finishTest = () => {
-    setTestRunning(false);
+    stopTest();
+    nextWord();
+    setValue("");
     const themeData = theme == 0 ? false : true;
     try {
       const data = {
@@ -106,11 +101,7 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
         score: score,
         theme: themeData,
       };
-      console.log("data: ", data);
-      const res = createScore(data);
-      res.then((result) => {
-        console.log("result: ", result);
-      });
+      createScore(data);
     } catch (error) {
       console.log(error);
     }
@@ -126,52 +117,60 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
     setReverseWord("");
   };
 
-  const handleKeyDown = (e: any) => {
-    if (testRunning)
-      if (e.keyCode === 32) {
-        if (value == currentWord) {
-          setScore(score + 1);
-        } else {
-          const currentWordData = resultObject.filter(
-            (word: any) => word.text == currentWord
-          );
-          const wordData = {
-            text: currentWord,
-            mistakes: currentWordData[0].mistakes + 1,
-          };
-          const wordId = currentWordData[0]._id;
-          updateWord(wordId, wordData);
-        }
-        nextWord();
-        setValue("");
-      } else if (e.keyCode === 8) {
-        if (reverseWord.length > 0) {
-          const currentChar = reverseWord.length - 1;
-          const currentWordArray = currentWord.split("");
-          const letterToAdd = currentWordArray[currentChar];
-          if (value.length <= currentWord.length) {
-            setCurrentWords(letterToAdd + currentWords);
-            setCurrentDynamicWord(letterToAdd + currentDynamicWord);
-            setReverseWord(reverseWord.slice(0, -1));
-            setValue(value.slice(0, -1));
-          }
-          setValue(value.slice(0, -1));
-        } else if (reverseWord.length == 0) {
-          setValue("");
-        }
-      } else if (e.keyCode !== 16) {
-        setValue(value + e.key);
-        if (currentDynamicWord.length > 0) {
-          setCurrentDynamicWord(currentDynamicWord.slice(1));
-          const letterGone = currentDynamicWord.slice(0, 1);
-          setReverseWord(reverseWord + letterGone);
-          setCurrentWords(currentWords.slice(1));
-        }
+  const startTest = () => {
+    setScore(0);
+    setTimer(selectedTime);
+    setTestRunning(true);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!testRunning) startTest();
+    if (e.keyCode === 32) {
+      // SPACE
+      if (value === currentWord) {
+        setScore(score + 1);
+      } else {
+        const currentWordData = resultObject.filter(
+          (word: any) => word.text == currentWord
+        );
+        const wordData = {
+          text: currentWord,
+          mistakes: currentWordData[0].mistakes + 1,
+        };
+        const wordId = currentWordData[0]._id;
+        updateWord(wordId, wordData);
       }
+      nextWord();
+      setValue("");
+    } else if (e.keyCode === 8) {
+      // BACKSPACE
+      if (reverseWord.length > 0) {
+        const currentChar = reverseWord.length - 1;
+        const currentWordArray = currentWord.split("");
+        const letterToAdd = currentWordArray[currentChar];
+        if (value.length <= currentWord.length) {
+          setCurrentWords(letterToAdd + currentWords);
+          setCurrentDynamicWord(letterToAdd + currentDynamicWord);
+          setReverseWord(reverseWord.slice(0, -1));
+          setValue(value.slice(0, -1));
+        }
+        setValue(value.slice(0, -1));
+      } else if (reverseWord.length == 0) {
+        setValue("");
+      }
+    } else if (isAlphabetCharacter(e)) {
+      setValue(value + e.key);
+      if (currentDynamicWord.length > 0) {
+        setCurrentDynamicWord(currentDynamicWord.slice(1));
+        const letterGone = currentDynamicWord.slice(0, 1);
+        setReverseWord(reverseWord + letterGone);
+        setCurrentWords(currentWords.slice(1));
+      }
+    }
   };
 
   return (
-    <Stack direction="column" spacing={10}>
+    <Stack direction="column" spacing={5}>
       <Stack direction="row" spacing={4}>
         <Select
           value={selectedTime}
@@ -201,11 +200,16 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
         </Select>
         <Button
           variant="contained"
-          onClick={(e) => (!testRunning ? startTest() : null)}
+          onClick={(e) => (testRunning ? resetTest() : null)}
         >
-          Start Test
+          Reset Test
         </Button>
       </Stack>
+
+      <Stack direction="row" spacing={4} justifyContent="center">
+        <Timer time={testRunning ? timer : selectedTime} />
+      </Stack>
+
       <Stack
         direction="row"
         style={{ color: "text.primary", backgroundColor: "primary" }}
@@ -229,12 +233,7 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
       </Stack>
 
       <Stack direction="row" spacing={10}>
-        <Typography>{"Current score is: " + score}</Typography>
-        {testRunning ? (
-          <Typography>{"Time left: " + timer + " seconds"}</Typography>
-        ) : (
-          <Typography>{"Time left: " + selectedTime + " seconds"}</Typography>
-        )}
+        <Typography>{"Score: " + score}</Typography>
       </Stack>
     </Stack>
   );
