@@ -10,8 +10,6 @@ import * as React from "react";
 const MistakesTable: React.FC<{ data: any }> = (props) => {
   const { data } = props;
 
-  console.log("data: ", data);
-
   const createData = (word: string, mistakes: number) => {
     return { word, mistakes };
   };

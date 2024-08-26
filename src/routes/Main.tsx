@@ -7,10 +7,9 @@ import Profile from "../components/Profile";
 import Register from "../components/Register";
 import Scores from "../components/Scores/Scores";
 import Test from "../components/Test/Test";
+import { isUserLoggedIn } from "../core/isUserLoggedIn";
 
 const Main: React.FC<{ view: string }> = (props) => {
-  const user = localStorage.getItem("user") || "";
-
   const mode: number = localStorage.getItem("theme") == "dark" ? 1 : 0;
 
   const [theme, setTheme] = useState<number>(mode);
@@ -45,7 +44,7 @@ const Main: React.FC<{ view: string }> = (props) => {
           </Stack>
         )}
 
-        {props.view == "profile" && user !== "" && (
+        {props.view == "profile" && isUserLoggedIn() && (
           <Stack alignItems={"center"} sx={{ mt: 5 }}>
             <Profile></Profile>
           </Stack>
@@ -57,13 +56,13 @@ const Main: React.FC<{ view: string }> = (props) => {
           </Stack>
         )}
 
-        {props.view == "login" && user == "" && (
+        {props.view == "login" && !isUserLoggedIn() && (
           <Stack alignItems={"center"} sx={{ mt: 20 }}>
             <Login></Login>
           </Stack>
         )}
 
-        {props.view == "register" && user == "" && (
+        {props.view == "register" && !isUserLoggedIn() && (
           <Stack alignItems={"center"} sx={{ mt: 20 }}>
             <Register></Register>
           </Stack>

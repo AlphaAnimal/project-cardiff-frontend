@@ -3,16 +3,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getScores } from "../services/scoreServices";
 import { logout } from "../services/userServices";
-import ScoreTable from "./Scores/ScoresTable";
+import ScoreTable from "./Scores/components/ScoresTable";
 
 const Profile: React.FC<{}> = () => {
-  const user = JSON.parse(localStorage.getItem("user") || "");
-
-  const [lightScores, setLightScores] = useState();
-  const [darkScores, setDarkScores] = useState();
-  const [preferredTheme, setPreferredTheme] = useState("");
-  const [preferredThemeTests, setPreferredThemeTests] = useState(0);
-
+  const _user = localStorage.getItem("user");
   useEffect(() => {
     try {
       const res = getScores();
@@ -38,7 +32,17 @@ const Profile: React.FC<{}> = () => {
     }
   }, []);
 
+  const [lightScores, setLightScores] = useState();
+  const [darkScores, setDarkScores] = useState();
+  const [preferredTheme, setPreferredTheme] = useState("");
+  const [preferredThemeTests, setPreferredThemeTests] = useState(0);
+
   const navigate = useNavigate();
+
+  if (!_user) return <></>;
+  const user = JSON.parse(_user);
+
+
 
   const onLogout = () => {
     const res = logout();

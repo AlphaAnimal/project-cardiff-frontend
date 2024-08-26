@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getScores } from "../../services/scoreServices";
 import { getWords } from "../../services/wordsServices";
-import MistakesTable from "./MistakesTable";
-import ScoreTable from "./ScoresTable";
+import MistakesTable from "./components/MistakesTable";
+import ScoreTable from "./components/ScoresTable";
 
 const Scores: React.FC<{}> = () => {
   const [lightScores, setLightScores] = useState();
