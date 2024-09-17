@@ -1,8 +1,8 @@
 import { Divider, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getScores } from "../../services/scoreServices";
-import { getWords } from "../../services/wordsServices";
+import { getScores } from "../../state/scoreServices";
+import { getWords } from "../../state/wordsServices";
 import MistakesTable from "./components/MistakesTable";
 import ScoreTable from "./components/ScoresTable";
 

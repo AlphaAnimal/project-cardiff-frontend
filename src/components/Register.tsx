@@ -1,7 +1,7 @@
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from "../services/userServices";
+import { register } from "../state/userServices";
 
 const Register: React.FC<{}> = () => {
   const navigate = useNavigate();

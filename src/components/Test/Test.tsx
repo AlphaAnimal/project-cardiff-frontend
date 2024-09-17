@@ -7,8 +7,10 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { createScore } from "../../services/scoreServices";
-import { getWords, updateWord } from "../../services/wordsServices";
+import { useRecoilValue } from "recoil";
+import { createScore } from "../../state/scoreServices";
+import { wordsSelector } from "../../state/selectors/wordsSelector";
+import { updateWord } from "../../state/wordsServices";
 import Timer from "./components/Timer";
 import { isAlphabetCharacter, shuffleArray } from "./utils";
 
@@ -19,27 +21,14 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
   const user = loggedUser ? JSON.parse(loggedUser) : "";
   const userId = user._id || "";
 
-  useEffect(() => {
-    try {
-      const res = getWords();
-      res.then((result) => {
-        setResultObject(result);
-        const words = result.map((word: any) => word.text);
-        const shuffledWords = shuffleArray(words);
-        setWords(shuffledWords);
-        setWordsString(shuffledWords.join(" "));
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  const _words = useRecoilValue(wordsSelector);
+  const processedWords = shuffleArray(
+    _words.map((word: any) => word.text)
+  ).join(" ");
 
-  const [resultObject, setResultObject] = useState<any>();
-  const [words, setWords] = useState<string[]>([""]);
-  const [wordsString, setWordsString] = useState<string>(words.join(" "));
   const [selectedTime, setSelectedTime] = useState<number>(60);
   const [value, setValue] = useState<string>("");
-  const [currentWords, setCurrentWords] = useState<string>(wordsString);
+  const [currentWords, setCurrentWords] = useState<string>(processedWords);
   const [currentDynamicWord, setCurrentDynamicWord] = useState<string>(
     currentWords.substring(0, currentWords.indexOf(" "))
   );
@@ -71,12 +60,6 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
     if (testRunning)
       timer > 0 ? setTimeout(() => setTimer(timer - 1), 1000) : finishTest();
   }, [timer]);
-
-  useEffect(() => {
-    setCurrentWords(wordsString);
-    setCurrentDynamicWord(wordsString.substring(0, wordsString.indexOf(" ")));
-    setCurrentWord(wordsString.substring(0, wordsString.indexOf(" ")));
-  }, [wordsString]);
 
   const stopTest = () => {
     setTestRunning(false);
@@ -130,7 +113,7 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
       if (value === currentWord) {
         setScore(score + 1);
       } else {
-        const currentWordData = resultObject.filter(
+        const currentWordData = _words.filter(
           (word: any) => word.text == currentWord
         );
         const wordData = {

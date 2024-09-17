@@ -1,8 +1,8 @@
 import { Button, Divider, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getScores } from "../services/scoreServices";
-import { logout } from "../services/userServices";
+import { getScores } from "../state/scoreServices";
+import { logout } from "../state/userServices";
 import ScoreTable from "./Scores/components/ScoresTable";
 
 const Profile: React.FC<{}> = () => {
