@@ -6,24 +6,28 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { createScore } from "../../state/scoreServices";
-import { wordsSelector } from "../../state/selectors/wordsSelector";
+import { IWord, wordsSelector } from "../../state/selectors/wordsSelector";
 import { updateWord } from "../../state/wordsServices";
 import Timer from "./components/Timer";
 import { isAlphabetCharacter, shuffleArray } from "./utils";
 
-const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
+const Test: React.FC<{
+  theme: number;
+  setTheme: React.Dispatch<React.SetStateAction<number>>;
+}> = (props) => {
   const { theme, setTheme } = props;
+
+  const wordObjects = useRecoilValue(wordsSelector);
 
   const loggedUser = localStorage.getItem("user");
   const user = loggedUser ? JSON.parse(loggedUser) : "";
   const userId = user._id || "";
 
-  const _words = useRecoilValue(wordsSelector);
   const processedWords = shuffleArray(
-    _words.map((word: any) => word.text)
+    wordObjects.map((word: IWord) => word.text)
   ).join(" ");
 
   const [selectedTime, setSelectedTime] = useState<number>(60);
@@ -76,7 +80,7 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
     stopTest();
     nextWord();
     setValue("");
-    const themeData = theme == 0 ? false : true;
+    const themeData = theme === 0 ? false : true;
     try {
       const data = {
         user: userId,
@@ -113,8 +117,8 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
       if (value === currentWord) {
         setScore(score + 1);
       } else {
-        const currentWordData = _words.filter(
-          (word: any) => word.text == currentWord
+        const currentWordData = wordObjects.filter(
+          (word: any) => word.text === currentWord
         );
         const wordData = {
           text: currentWord,
@@ -138,7 +142,7 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
           setValue(value.slice(0, -1));
         }
         setValue(value.slice(0, -1));
-      } else if (reverseWord.length == 0) {
+      } else if (reverseWord.length === 0) {
         setValue("");
       }
     } else if (isAlphabetCharacter(e)) {
@@ -153,72 +157,74 @@ const Test: React.FC<{ theme: number; setTheme: any }> = (props) => {
   };
 
   return (
-    <Stack direction="column" spacing={5}>
-      <Stack direction="row" spacing={4}>
-        <Select
-          value={selectedTime}
-          onChange={handleTimeChange}
-          style={{ width: "155px" }}
-        >
-          <MenuItem value={60}>One Minute</MenuItem>
-          <MenuItem value={120}>Two Minutes</MenuItem>
-          <MenuItem value={180}>Three Minutes</MenuItem>
-        </Select>
-        <Select
-          value={keyboardType}
-          onChange={handleTypeChange}
-          style={{ width: "155px" }}
-        >
-          <MenuItem value={"qwerty"}>QWERTY</MenuItem>
-          <MenuItem value={"dvorak"}>DVORAK</MenuItem>
-          <MenuItem value={"colemark"}>COLEMARK</MenuItem>
-        </Select>
-        <Select
-          value={theme}
-          onChange={handleThemeChange}
-          style={{ width: "155px" }}
-        >
-          <MenuItem value={0}>Light Theme</MenuItem>
-          <MenuItem value={1}>Dark Theme</MenuItem>
-        </Select>
-        <Button
-          variant="contained"
-          onClick={(e) => (testRunning ? resetTest() : null)}
-        >
-          Reset Test
-        </Button>
-      </Stack>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Stack direction="column" spacing={5}>
+        <Stack direction="row" spacing={4}>
+          <Select
+            value={selectedTime}
+            onChange={handleTimeChange}
+            style={{ width: "155px" }}
+          >
+            <MenuItem value={60}>One Minute</MenuItem>
+            <MenuItem value={120}>Two Minutes</MenuItem>
+            <MenuItem value={180}>Three Minutes</MenuItem>
+          </Select>
+          <Select
+            value={keyboardType}
+            onChange={handleTypeChange}
+            style={{ width: "155px" }}
+          >
+            <MenuItem value={"qwerty"}>QWERTY</MenuItem>
+            <MenuItem value={"dvorak"}>DVORAK</MenuItem>
+            <MenuItem value={"colemark"}>COLEMARK</MenuItem>
+          </Select>
+          <Select
+            value={theme}
+            onChange={handleThemeChange}
+            style={{ width: "155px" }}
+          >
+            <MenuItem value={0}>Light Theme</MenuItem>
+            <MenuItem value={1}>Dark Theme</MenuItem>
+          </Select>
+          <Button
+            variant="contained"
+            onClick={(e) => (testRunning ? resetTest() : null)}
+          >
+            Reset Test
+          </Button>
+        </Stack>
 
-      <Stack direction="row" spacing={4} justifyContent="center">
-        <Timer time={testRunning ? timer : selectedTime} />
-      </Stack>
+        <Stack direction="row" spacing={4} justifyContent="center">
+          <Timer time={testRunning ? timer : selectedTime} />
+        </Stack>
 
-      <Stack
-        direction="row"
-        style={{ color: "text.primary", backgroundColor: "primary" }}
-      >
-        <TextField
-          id="typing-box"
-          autoComplete="off"
-          variant="standard"
-          dir="rtl"
-          style={{ maxWidth: "200px" }}
-          InputProps={{ style: { fontSize: 40 } }}
-          onKeyDown={(e) => handleKeyDown(e)}
-          value={value}
-        />
-        <TextField
-          disabled={true}
-          variant="standard"
-          InputProps={{ style: { fontSize: 40 } }}
-          value={currentWords}
-        />
-      </Stack>
+        <Stack
+          direction="row"
+          style={{ color: "text.primary", backgroundColor: "primary" }}
+        >
+          <TextField
+            id="typing-box"
+            autoComplete="off"
+            variant="standard"
+            dir="rtl"
+            style={{ maxWidth: "200px" }}
+            InputProps={{ style: { fontSize: 40 } }}
+            onKeyDown={(e) => handleKeyDown(e)}
+            value={value}
+          />
+          <TextField
+            disabled={true}
+            variant="standard"
+            InputProps={{ style: { fontSize: 40 } }}
+            value={currentWords}
+          />
+        </Stack>
 
-      <Stack direction="row" spacing={10}>
-        <Typography>{"Score: " + score}</Typography>
+        <Stack direction="row" spacing={10}>
+          <Typography>{"Score: " + score}</Typography>
+        </Stack>
       </Stack>
-    </Stack>
+    </Suspense>
   );
 };
 
